@@ -3,8 +3,15 @@ const { EOL } = require('os');
 const { Transform } = require('stream');
 const readdirp = require('readdirp');
 
+/*
+ * Print out all JavaScript files within the current folder and
+ * subfolders along with their size.
+ */
+
+let dirname = '../../../../GNSTemple/code/'
+
 const entryInfoStream = readdirp({
-  root: path.join(__dirname),
+  root: path.join(dirname),
   fileFilter: '*.*',
   directoryFilter: [ '!.git', '!*modules' ],
 });
@@ -32,4 +39,6 @@ entryInfoStream
       callback();
     },
   }))
-  .pipe(process.stdout);
+  .on('data', function (entry) {
+    console.log('entry: ', entry)
+  });
