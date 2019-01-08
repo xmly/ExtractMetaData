@@ -14,6 +14,7 @@ let dirname = '../../../../GNSTemple/code/'
 
 var extensions = []
 var runTimes = []
+var unknownRunTimes = []
 
 const entryInfoStream = readdirp({
   root: path.join(dirname),
@@ -38,8 +39,12 @@ entryInfoStream
      if(typeof(runTime)!=='undefined' && !runTimes.includes(runTime)){
        runTimes.push(runTime.technology)
      }
+     if(typeof(runTime)==='undefined' && !runTimes.includes(runTime)){
+       unknownRunTimes.push(extension)
+     }
     })
-    console.log('runTimes: ', runTimes);
+    console.log('runTimes: ', runTimes)
+    console.log('unknownRunTimes: ', unknownRunTimes);
   })
   .pipe(new Transform({
     objectMode: true,
