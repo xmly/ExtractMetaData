@@ -2,6 +2,8 @@ const path = require('path');
 const { EOL } = require('os');
 const { Transform } = require('stream');
 const readdirp = require('readdirp');
+var requiredFunctions = require('./requiredFunctions')
+var utils = require('./utils')
 
 /*
  * Print out all JavaScript files within the current folder and
@@ -10,11 +12,15 @@ const readdirp = require('readdirp');
 
 let dirname = '../../../../GNSTemple/code/'
 
+var extensions = []
+var runTimes = []
+
 const entryInfoStream = readdirp({
   root: path.join(dirname),
   fileFilter: '*.*',
   directoryFilter: [ '!.git', '!*modules' ],
 });
+
 
 entryInfoStream
   .on('warn', (err) => {
@@ -22,7 +28,19 @@ entryInfoStream
     // Optionally call stream.destroy() here in order to abort and cause 'close' to be emitted
   })
   .on('error', err => console.error('fatal error', err))
-  .on('end', () => console.log('done'))
+  .on('end', () => {
+    console.log('extensions length: ', extensions);
+    extensions.forEach((extension) => {
+      let runTime = utils.extensionMapper.find(obj => {
+        // console.log('ext findTech: ', '.'+extension.toUpperCase());
+       return obj.fileExtension === '.'+extension.toUpperCase()
+     })
+     if(typeof(runTime)!=='undefined' && !runTimes.includes(runTime)){
+       runTimes.push(runTime.technology)
+     }
+    })
+    console.log('runTimes: ', runTimes);
+  })
   .pipe(new Transform({
     objectMode: true,
     transform(entryInfo, encoding, callback) {
@@ -40,5 +58,9 @@ entryInfoStream
     },
   }))
   .on('data', function (entry) {
-    console.log('entry: ', entry)
-  });
+    let extension = requiredFunctions.findExtension(JSON.parse(entry).path)
+    if(!extensions.includes(extension)){
+      extensions.push(extension)
+    }
+    // -- need to check for gradle, maven, ant, webpack, nodemodules, git etc
+  })
