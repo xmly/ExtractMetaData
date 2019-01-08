@@ -16,6 +16,91 @@ module.exports.extensionMapper = [
     technology: "Forth Language File"
   },
   {
+    fileExtension: ".ASP",
+    technology: "ASP Classic"
+  },
+  {
+    fileExtension: ".ASPX",
+    technology: "ASP.NET"
+  },
+  {
+    fileExtension: ".AXD",
+    technology: "ASP.NET"
+  },
+  {
+    fileExtension: ".ASX",
+    technology: "ASP.NET"
+  },
+  {
+    fileExtension: ".ASMX",
+    technology: "ASP.NET"
+  },
+  {
+    fileExtension: ".ASHX",
+    technology: "ASP.NET"
+  },
+  {
+    fileExtension: ".CSS",
+    technology: "CSS"
+  },
+  {
+    fileExtension: ".CFM",
+    technology: "Cold Fusion"
+  },
+  {
+    fileExtension: ".YAWS",
+    technology: "Erlang"
+  },
+  {
+    fileExtension: ".SWF",
+    technology: "Flash"
+  },
+  {
+    fileExtension: ".HTML",
+    technology: "HTML"
+  },
+  {
+    fileExtension: ".HTM",
+    technology: "HTML"
+  },
+  {
+    fileExtension: ".XHTML",
+    technology: "HTML"
+  },
+  {
+    fileExtension: ".JHTML",
+    technology: "HTML"
+  },
+  {
+    fileExtension: ".JS",
+    technology: "JavaScript"
+  },
+  {
+    fileExtension: ".PHP",
+    technology: "PHP"
+  },
+  {
+    fileExtension: ".PHP4",
+    technology: "PHP"
+  },
+  {
+    fileExtension: ".PHP3",
+    technology: "PHP"
+  },
+  {
+    fileExtension: ".PHTML",
+    technology: "PHP"
+  },
+  {
+    fileExtension: ".XML",
+    technology: "XML"
+  },
+  {
+    fileExtension: ".SVG",
+    technology: "SVG"
+  },
+
+  {
     fileExtension: ".A",
     technology: "Static Library"
   },
@@ -2296,8 +2381,8 @@ module.exports.extensionMapper = [
     technology: "Ruby Source Code"
   },
   {
-    fileExtension: ".RB",
-    technology: "Real Studio Project"
+    fileExtension: ".RHTML",
+    technology: "Ruby"
   },
   {
     fileExtension: ".RBC",
