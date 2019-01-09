@@ -10,7 +10,7 @@ var utils = require('./utils')
  * subfolders along with their size.
  */
 
-let dirname = '../../../../GNSTemple/code/'
+let dirname = '../../../../GNSTemple/code/gns-temp/'
 
 var extensions = []
 var runTimes = []
@@ -80,8 +80,12 @@ function readFiles() {
    // do something with file entry here
   }, function (err, res) {
     // all done, move on or do final step for all file entries here
+    var listOfFileNames = []
     res.files.forEach((file) => {
-      console.log('fname: ', file.name);
+      // console.log('fname: ', file.name);
+      if(!listOfFileNames.includes(file.name)){
+        listOfFileNames.push(file.name)
+      }
       let extension = requiredFunctions.findExtension(file.name)
       if(!extensions.includes(extension)){
         extensions.push(extension)
@@ -104,6 +108,15 @@ function readFiles() {
     console.log('runTimes: ', runTimes);
     console.log('unknownRunTimes: ', unknownRunTimes);
 
+    // start step 2 : find build and dependency management tools
+    requiredFunctions.findBuildAndDependencyManagementTools(listOfFileNames)
+    // end of step 2
+
+    // start step 3 : find framework library based on dependency management
+    // end of step 3
+
+    // start step 4 : extract build and run commands
+    // end of step 4
   });
 }
 
