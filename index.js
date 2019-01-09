@@ -83,8 +83,8 @@ function readFiles() {
     var listOfFileNames = []
     res.files.forEach((file) => {
       // console.log('fname: ', file.name);
-      if(!listOfFileNames.includes(file.name)){
-        listOfFileNames.push(file.name)
+      if(!listOfFileNames.includes(file.name.toUpperCase())){
+        listOfFileNames.push(file.name.toUpperCase())
       }
       let extension = requiredFunctions.findExtension(file.name)
       if(!extensions.includes(extension)){
@@ -113,6 +113,8 @@ function readFiles() {
     // end of step 2
 
     // start step 3 : find framework library based on dependency management
+    var frameworksLibrary = requiredFunctions.findFrameworksFromBuildAndDependencyTools(buildAndDependencyTools)
+
     // end of step 3
 
     // start step 4 : extract build and run commands
