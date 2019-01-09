@@ -1,5 +1,6 @@
 var utils = require('./utils')
 var _ = require('underscore')
+var readJson = require('read-package-json')
 
 module.exports.findExtension = function (fileName) {
   return fileName.substring(fileName.lastIndexOf('.')+1, fileName.length);
@@ -40,7 +41,25 @@ function findFilePathBasedOnFileName (fileName, listOfFileNamesAndPaths) {
   })
 }
 
-module.exports.findFrameworksFromBuildAndDependencyTools = function (buildAndDependencyTools, listOfFileNamesAndPaths) {
+function parsePackageJSON (filePath) {
+  readJson(filePath, console.error, false, function (er, data) {
+    if (er) {
+      console.error("There was an error reading the file")
+      return
+    }
+    console.log('parsed name: ', data.name);
+    // console.log('parsed dependencies/frameworks: ', Object.keys(data.dependencies));
+    console.log('parsed scripts: ', data.scripts);
+    var result = {
+      name: data.name,
+      frameworks: Object.keys(data.dependencies),
+      scripts: data.scripts
+    }
+    return result
+  });
+}
+
+module.exports.findFrameworksFromBuildAndDependencyTools = function (buildAndDependencyTools, listOfFileNamesAndPaths, dirname) {
 
   console.log('find frameworks - b&D tools: ', buildAndDependencyTools);
   // console.log('list of file names and path: ', listOfFileNamesAndPaths);
@@ -75,9 +94,11 @@ module.exports.findFrameworksFromBuildAndDependencyTools = function (buildAndDep
 
       case 'PACKAGE.JSON':
         console.log('package.json start');
-        var filePath = findFilePathBasedOnFileName('PACKAGE.JSON', listOfFileNamesAndPaths).filePath
-        console.log('fpath: ', filePath);
-        console.log('package.json end');
+        var file = findFilePathBasedOnFileName('PACKAGE.JSON', listOfFileNamesAndPaths)
+        var fPath = dirname+'/'+file.filePath
+        console.log('fpath: ', fPath);
+        var result = parsePackageJSON(fPath)
+        console.log('package.json end ', result);
         break;
 
       case 'COMPOSER.JSON':
@@ -98,7 +119,7 @@ module.exports.findFrameworksFromBuildAndDependencyTools = function (buildAndDep
       default:
         console.log('default case. Missed for: ', tool);
         break;
-
     }
+    console.log('switch output: ', result);
   })
 }

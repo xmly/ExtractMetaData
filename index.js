@@ -10,7 +10,7 @@ var utils = require('./utils')
  * subfolders along with their size.
  */
 
-let dirname = '../../../../GNSTemple/code/gns-temp/'
+let dirname = '../../../../GNSTemple/code/gns-temp'
 
 var extensions = []
 var runTimes = []
@@ -118,7 +118,7 @@ function readFiles() {
     // end of step 2
 
     // start step 3 : find framework library based on dependency management
-    var frameworksLibrary = requiredFunctions.findFrameworksFromBuildAndDependencyTools(buildAndDependencyTools, listOfFileNamesAndPaths)
+    var frameworksLibrary = requiredFunctions.findFrameworksFromBuildAndDependencyTools(buildAndDependencyTools, listOfFileNamesAndPaths, dirname)
 
     // end of step 3
 
