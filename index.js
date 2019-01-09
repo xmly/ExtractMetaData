@@ -10,7 +10,7 @@ var utils = require('./utils')
  * subfolders along with their size.
  */
 
-let dirname = '../../../../GNSTemple/code/gns-temp'
+let dirname = '../../../../GNSTemple/code/gns-temp/java'
 
 var extensions = []
 var runTimes = []

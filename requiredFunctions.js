@@ -1,6 +1,7 @@
 var utils = require('./utils')
 var _ = require('underscore')
 var readJson = require('read-package-json')
+var pomParser = require("pom-parser")
 
 module.exports.findExtension = function (fileName) {
   return fileName.substring(fileName.lastIndexOf('.')+1, fileName.length);
@@ -33,12 +34,13 @@ module.exports.findBuildAndDependencyManagementTools = function (listOfFileNames
   return _.intersection(buildAndDependencyCheckList, fileNamesList)
 }
 
-function findFilePathBasedOnFileName (fileName, listOfFileNamesAndPaths) {
-  return listOfFileNamesAndPaths.find((file) => {
+function findFilePathBasedOnFileName (fileName, listOfFileNamesAndPaths, dirname) {
+  var f = listOfFileNamesAndPaths.find((file) => {
     if(file.fileName.toString() === fileName.toString()){
       return file
     }
   })
+  return dirname+'/'+f.filePath
 }
 
 function parsePackageJSON (filePath) {
@@ -47,9 +49,9 @@ function parsePackageJSON (filePath) {
       console.error("There was an error reading the file")
       return
     }
-    console.log('parsed name: ', data.name);
+    // console.log('parsed name: ', data.name);
     // console.log('parsed dependencies/frameworks: ', Object.keys(data.dependencies));
-    console.log('parsed scripts: ', data.scripts);
+    // console.log('parsed scripts: ', data.scripts);
     var result = {
       name: data.name,
       frameworks: Object.keys(data.dependencies),
@@ -59,15 +61,49 @@ function parsePackageJSON (filePath) {
   });
 }
 
+function parsePOMXML (filePath) {
+    // The required options, including the filePath.
+    // Other parsing options from https://github.com/Leonidas-from-XIV/node-xml2js#options
+    var opts = {
+      filePath // The path to a pom file
+    };
+    // Parse the pom based on a path
+    pomParser.parse(opts, function(err, pomResponse) {
+      if (err) {
+        console.log("ERROR: " + err);
+        process.exit(1);
+      }
+
+      // The parsed pom pbject.
+      // console.log("OBJECT: " + JSON.stringify(pomResponse.pomObject, null, '\t'));
+      var data = pomResponse.pomObject.project
+      console.log('parse data: ', data);
+      console.log('parse dependencies: ', data.dependencies.dependency);
+      var frameworks = []
+      data.dependencies.dependency.forEach(obj => {
+        frameworks.push()
+      })
+
+      var result = {
+        name: data.artifactId,
+        frameworks: data.dependencies.dependency,
+        scripts: ''
+      }
+      return result
+  });
+}
+
 module.exports.findFrameworksFromBuildAndDependencyTools = function (buildAndDependencyTools, listOfFileNamesAndPaths, dirname) {
 
   console.log('find frameworks - b&D tools: ', buildAndDependencyTools);
   // console.log('list of file names and path: ', listOfFileNamesAndPaths);
-
+  var output
   buildAndDependencyTools.forEach((tool) => {
     switch (tool) {
       case 'POM.XML':
         console.log('pom xml start');
+        var filePath = findFilePathBasedOnFileName('POM.XML', listOfFileNamesAndPaths, dirname)
+        output = parsePOMXML(filePath)
         console.log('pom xml end');
         break;
 
@@ -94,10 +130,8 @@ module.exports.findFrameworksFromBuildAndDependencyTools = function (buildAndDep
 
       case 'PACKAGE.JSON':
         console.log('package.json start');
-        var file = findFilePathBasedOnFileName('PACKAGE.JSON', listOfFileNamesAndPaths)
-        var fPath = dirname+'/'+file.filePath
-        console.log('fpath: ', fPath);
-        var result = parsePackageJSON(fPath)
+        var fPath = findFilePathBasedOnFileName('PACKAGE.JSON', listOfFileNamesAndPaths, dirname)
+        output = parsePackageJSON(fPath)
         console.log('package.json end ', result);
         break;
 
@@ -120,6 +154,6 @@ module.exports.findFrameworksFromBuildAndDependencyTools = function (buildAndDep
         console.log('default case. Missed for: ', tool);
         break;
     }
-    console.log('switch output: ', result);
+    console.log('switch output: ', output);
   })
 }

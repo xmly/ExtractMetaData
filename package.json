@@ -9,6 +9,7 @@
   "author": "Phanikumar Adiraju",
   "license": "ISC",
   "dependencies": {
+    "pom-parser": "^1.1.1",
     "read-package-json": "^2.0.13",
     "readdirp": "^2.2.1",
     "underscore": "^1.9.1"
