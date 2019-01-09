@@ -9,6 +9,7 @@
   "author": "Phanikumar Adiraju",
   "license": "ISC",
   "dependencies": {
-    "readdirp": "^2.2.1"
+    "readdirp": "^2.2.1",
+    "underscore": "^1.9.1"
   }
 }
