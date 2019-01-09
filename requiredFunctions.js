@@ -11,7 +11,7 @@ module.exports.findTechnology = function (extension) {
  })
 }
 
-module.exports.findBuildAndDependencyManagementTools = function (listOfFileNames) {
+module.exports.findBuildAndDependencyManagementTools = function (listOfFileNamesAndPaths) {
   var buildAndDependencyCheckList = [
     // list all check list as upper case strings for easy string comparison
     'POM.XML', 'BUILD.GRADLE', // java
@@ -22,14 +22,28 @@ module.exports.findBuildAndDependencyManagementTools = function (listOfFileNames
     // Ruby - interpreted language so no build tools
     // Python - pip : scan all files for imports
   ]
-  // console.log('exp findB&D list of Files: ', listOfFileNames);
+  // console.log('exp findB&D list of Files: ', listOfFileNamesAndPaths);
 
-  return _.intersection(buildAndDependencyCheckList, listOfFileNames)
+  var fileNamesList = []
+  listOfFileNamesAndPaths.forEach((file) => {
+    fileNamesList.push(file.fileName) // since every object has just one key
+  })
+
+  return _.intersection(buildAndDependencyCheckList, fileNamesList)
 }
 
-module.exports.findFrameworksFromBuildAndDependencyTools = function (buildAndDependencyTools) {
+function findFilePathBasedOnFileName (fileName, listOfFileNamesAndPaths) {
+  return listOfFileNamesAndPaths.find((file) => {
+    if(file.fileName.toString() === fileName.toString()){
+      return file
+    }
+  })
+}
+
+module.exports.findFrameworksFromBuildAndDependencyTools = function (buildAndDependencyTools, listOfFileNamesAndPaths) {
 
   console.log('find frameworks - b&D tools: ', buildAndDependencyTools);
+  // console.log('list of file names and path: ', listOfFileNamesAndPaths);
 
   buildAndDependencyTools.forEach((tool) => {
     switch (tool) {
@@ -61,7 +75,8 @@ module.exports.findFrameworksFromBuildAndDependencyTools = function (buildAndDep
 
       case 'PACKAGE.JSON':
         console.log('package.json start');
-        console.log('calling package json code');
+        var filePath = findFilePathBasedOnFileName('PACKAGE.JSON', listOfFileNamesAndPaths).filePath
+        console.log('fpath: ', filePath);
         console.log('package.json end');
         break;
 

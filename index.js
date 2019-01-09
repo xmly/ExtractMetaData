@@ -80,11 +80,16 @@ function readFiles() {
    // do something with file entry here
   }, function (err, res) {
     // all done, move on or do final step for all file entries here
-    var listOfFileNames = []
+    var listOfFileNamesAndPaths = []
     res.files.forEach((file) => {
       // console.log('fname: ', file.name);
-      if(!listOfFileNames.includes(file.name.toUpperCase())){
-        listOfFileNames.push(file.name.toUpperCase())
+      if(!listOfFileNamesAndPaths.includes(file.name.toUpperCase())){
+        // var obj = {}
+        // obj[file.name.toUpperCase()] = file.path
+        listOfFileNamesAndPaths.push({
+          'fileName': file.name.toUpperCase(),
+          'filePath': file.path
+        })
       }
       let extension = requiredFunctions.findExtension(file.name)
       if(!extensions.includes(extension)){
@@ -109,11 +114,11 @@ function readFiles() {
     console.log('unknownRunTimes: ', unknownRunTimes);
 
     // start step 2 : find build and dependency management tools
-    var buildAndDependencyTools = requiredFunctions.findBuildAndDependencyManagementTools(listOfFileNames)
+    var buildAndDependencyTools = requiredFunctions.findBuildAndDependencyManagementTools(listOfFileNamesAndPaths)
     // end of step 2
 
     // start step 3 : find framework library based on dependency management
-    var frameworksLibrary = requiredFunctions.findFrameworksFromBuildAndDependencyTools(buildAndDependencyTools)
+    var frameworksLibrary = requiredFunctions.findFrameworksFromBuildAndDependencyTools(buildAndDependencyTools, listOfFileNamesAndPaths)
 
     // end of step 3
 
