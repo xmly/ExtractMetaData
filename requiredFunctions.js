@@ -21,9 +21,7 @@ module.exports.findBuildAndDependencyManagementTools = function (listOfFileNames
     // Ruby - interpreted language so no build tools
     // Python - pip : scan all files for imports
   ]
-  // console.log('exp findB&D: ', listOfFileNames);
+  // console.log('exp findB&D list of Files: ', listOfFileNames);
 
-  var result = _.intersection(buildAndDependencyList, listOfFileNames)
-  console.log('res intesection: ', result);
-
+  return _.intersection(buildAndDependencyList, listOfFileNames)
 }

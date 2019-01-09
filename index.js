@@ -109,7 +109,7 @@ function readFiles() {
     console.log('unknownRunTimes: ', unknownRunTimes);
 
     // start step 2 : find build and dependency management tools
-    requiredFunctions.findBuildAndDependencyManagementTools(listOfFileNames)
+    var buildAndDependencyTools = requiredFunctions.findBuildAndDependencyManagementTools(listOfFileNames)
     // end of step 2
 
     // start step 3 : find framework library based on dependency management
