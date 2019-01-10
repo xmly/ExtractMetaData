@@ -1761,10 +1761,6 @@ module.exports.extensionMapper = [
     technology: "Markdown Documentation File"
   },
   {
-    fileExtension: ".MD",
-    technology: "Machine Description File"
-  },
-  {
     fileExtension: ".MDOWN",
     technology: "Markdown File"
   },
