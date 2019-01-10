@@ -47,13 +47,34 @@ function main() {
     var buildAndDependencyTools = requiredFunctions.findBuildAndDependencyManagementTools(listOfFileNamesAndPaths)
     // end of step 2
 
-    var output = {
-      listOfFileNamesAndPaths,
-      extensions,
-      technology,
-      buildAndDependencyTools
-    }
-    console.log('output read then: ', output);
+    // start step 3 : find framework library based on dependency management
+    requiredFunctions.findFrameworksAndScriptsFromBuildAndDependencyTools(buildAndDependencyTools, listOfFileNamesAndPaths, dirname)
+    .then((frameworksAndScripts) => {
+      // console.log('frame index: ', frameworksAndScripts);
+      var frameworksAndDependencies = []
+      var scripts = []
+      frameworksAndScripts.forEach(frameworkAndScript => {
+        if(typeof(frameworkAndScript)!=='undefined'){ // few build tools like webpack are not parsed so return undefined
+          if(frameworkAndScript.frameworks.length!==0)
+            frameworksAndDependencies = frameworksAndDependencies.concat(frameworkAndScript.frameworks)
+          if(frameworkAndScript.scripts.length!==0)
+            scripts = scripts.concat(frameworkAndScript.scripts)
+        }
+      })
+
+      var output = {
+        // listOfFileNamesAndPaths,
+        // extensions,
+        technology,
+        buildAndDependencyTools,
+        frameworksAndDependencies,
+        scripts
+      }
+      return output
+    }) // end of step 3
+    .then((output) => {
+      console.log('final output: ', output);
+    })
 
   })
 }

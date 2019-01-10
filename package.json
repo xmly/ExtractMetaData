@@ -9,10 +9,11 @@
   "author": "Phanikumar Adiraju",
   "license": "ISC",
   "dependencies": {
+    "bluebird": "^3.5.3",
     "gradle-to-js": "^1.2.0",
     "lodash": "^4.17.11",
     "pom-parser": "^1.1.1",
     "read-package-json": "^2.0.13",
-    "readdirp": "^2.2.1",
+    "readdirp": "^2.2.1"
   }
 }
