@@ -10,9 +10,9 @@ var utils = require('./utils')
  * subfolders along with their size.
  */
 
-let dirname1 = '../../../../GNSTemple/code/gns-temp'
+let dirname = '../../../../GNSTemple/code/gns-temp'
 const dirname2 = '../TestProjects/javatest-maven'
-const dirname = '../TestProjects/javatest-gradle'
+const dirname3 = '../TestProjects/javatest-gradle'
 
 var extensions = []
 var runTimes = []
@@ -74,65 +74,55 @@ function extractRunTimes() {
 }
 
 function readFiles() {
-  readdirp({
-    root: path.join(dirname),
-    fileFilter: '*.*',
-    directoryFilter: [ '!.git', '!*modules' ],
-  }, function(fileInfo) {
-   // do something with file entry here
-  }, function (err, res) {
-    // all done, move on or do final step for all file entries here
-    var listOfFileNamesAndPaths = []
-    res.files.forEach((file) => {
-      // console.log('fname: ', file.name);
-      if(!listOfFileNamesAndPaths.includes(file.name.toUpperCase())){
-        // var obj = {}
-        // obj[file.name.toUpperCase()] = file.path
-        listOfFileNamesAndPaths.push({
-          'fileName': file.name.toUpperCase(),
-          'filePath': file.path
-        })
-      }
-      let extension = requiredFunctions.findExtension(file.name)
-      if(!extensions.includes(extension)){
-        extensions.push(extension)
-      }
-    })
+  return new Promise((resolve,reject) => {
+    readdirp({
+      root: path.join(dirname),
+      fileFilter: '*.*',
+      directoryFilter: [ '!.git', '!*modules' ],
+    }, function(fileInfo) {
+     // do something with file entry here
+    }, function (err, res) {
+      // all done, move on or do final step for all file entries here
+      if(err) reject(error)
 
-    extensions.forEach((extension) => {
-      let runTime = utils.extensionMapper.find(obj => {
-        // console.log('ext findTech: ', '.'+extension.toUpperCase());
-       return obj.fileExtension === '.'+extension.toUpperCase()
-     })
-     if(typeof(runTime)!=='undefined' && !runTimes.includes(runTime)){
-       runTimes.push(runTime.technology)
-     }
-     if(typeof(runTime)==='undefined' && !runTimes.includes(runTime)){
-       unknownRunTimes.push(extension)
-     }
-    })
-
-    console.log('runTimes: ', runTimes);
-    console.log('unknownRunTimes: ', unknownRunTimes);
-
-    // start step 2 : find build and dependency management tools
-    var buildAndDependencyTools = requiredFunctions.findBuildAndDependencyManagementTools(listOfFileNamesAndPaths)
-    // end of step 2
-
-    // start step 3 : find framework library based on dependency management
-    var frameworksLibrary = requiredFunctions.findFrameworksFromBuildAndDependencyTools(buildAndDependencyTools, listOfFileNamesAndPaths, dirname)
-
-    // end of step 3
-
-    // start step 4 : extract build and run commands
-    // end of step 4
-  });
+      var listOfFileNamesAndPaths = []
+      res.files.forEach((file) => {
+        // console.log('fname: ', file.name);
+        if(!listOfFileNamesAndPaths.includes(file.name.toUpperCase())){
+          // var obj = {}
+          // obj[file.name.toUpperCase()] = file.path
+          listOfFileNamesAndPaths.push({
+            'fileName': file.name.toUpperCase(),
+            'filePath': file.path
+          })
+        }
+        resolve(listOfFileNamesAndPaths)
+      })
+    });
+  })
 }
 
 
 function main() {
   console.log('started main');
   readFiles()
+  .then((listOfFileNamesAndPaths) => {
+    var extensions = requiredFunctions.findExtensions(listOfFileNamesAndPaths)
+    var technology = requiredFunctions.findTechnology(extensions)
+
+    // start step 2 : find build and dependency management tools
+    var buildAndDependencyTools = requiredFunctions.findBuildAndDependencyManagementTools(listOfFileNamesAndPaths)
+    // end of step 2
+
+    var output = {
+      listOfFileNamesAndPaths,
+      extensions,
+      technology,
+      buildAndDependencyTools
+    }
+    console.log('output read then: ', output);
+
+  })
 }
 
 main()

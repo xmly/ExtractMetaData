@@ -1,17 +1,40 @@
 var utils = require('./utils')
-var _ = require('underscore')
+var _ = require('lodash')
 var readJson = require('read-package-json')
 var pomParser = require("pom-parser")
 var g2js = require('gradle-to-js/lib/parser')
 
-module.exports.findExtension = function (fileName) {
-  return fileName.substring(fileName.lastIndexOf('.')+1, fileName.length);
+module.exports.findExtensions = function (listOfFileNamesAndPaths) {
+  var extensions = []
+  listOfFileNamesAndPaths.forEach((file) => {
+    let extension = file.fileName.substring(file.fileName.lastIndexOf('.')+1, file.fileName.length)
+    if(!extensions.includes(extension)){
+      extensions.push(extension)
+    }
+  })
+  return extensions
 }
 
-module.exports.findTechnology = function (extension) {
-  utils.extensionMapper.find(obj => {
-   return obj.fileExtension === '.'+extension.toUpperCase()
- })
+module.exports.findTechnology = function (extensions) {
+  var runTimes = []
+  var runTimesExtensions = []
+  var unknownRunTimesExtensions = []
+
+  extensions.forEach((extension) => {
+    utils.extensionMapper.find(obj => {
+      if(obj.fileExtension === '.'+extension.toUpperCase()){
+        runTimes.push(obj.technology)
+        runTimesExtensions.push('.'+extension.toUpperCase())
+      } else {
+        unknownRunTimesExtensions.push('.'+extension.toUpperCase())
+      }
+    })
+  })
+  var technology = {
+    runTimes: _.uniq(runTimes),
+    unknownRunTimes: _.difference(_.uniq(unknownRunTimesExtensions), _.uniq(runTimesExtensions))
+  }
+  return technology
 }
 
 module.exports.findBuildAndDependencyManagementTools = function (listOfFileNamesAndPaths) {
@@ -31,7 +54,6 @@ module.exports.findBuildAndDependencyManagementTools = function (listOfFileNames
   listOfFileNamesAndPaths.forEach((file) => {
     fileNamesList.push(file.fileName) // since every object has just one key
   })
-
   return _.intersection(buildAndDependencyCheckList, fileNamesList)
 }
 
