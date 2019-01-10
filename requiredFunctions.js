@@ -2,6 +2,7 @@ var utils = require('./utils')
 var _ = require('underscore')
 var readJson = require('read-package-json')
 var pomParser = require("pom-parser")
+var g2js = require('gradle-to-js/lib/parser')
 
 module.exports.findExtension = function (fileName) {
   return fileName.substring(fileName.lastIndexOf('.')+1, fileName.length);
@@ -57,6 +58,7 @@ function parsePackageJSON (filePath) {
       frameworks: Object.keys(data.dependencies),
       scripts: data.scripts
     }
+    console.log('packagejson result: ', result);
     return result
   });
 }
@@ -77,8 +79,8 @@ function parsePOMXML (filePath) {
       // The parsed pom pbject.
       // console.log("OBJECT: " + JSON.stringify(pomResponse.pomObject, null, '\t'));
       var data = pomResponse.pomObject.project
-      console.log('parse data: ', data);
-      console.log('parse dependencies: ', data.dependencies.dependency);
+      // console.log('parse data: ', data);
+      // console.log('parse dependencies: ', data.dependencies.dependency);
       var frameworks = []
       data.dependencies.dependency.forEach(obj => {
         frameworks.push()
@@ -89,7 +91,14 @@ function parsePOMXML (filePath) {
         frameworks: data.dependencies.dependency,
         scripts: ''
       }
+      console.log('pom xml result: ', result);
       return result
+  });
+}
+
+function parseGradleBuild (filePath) {
+  g2js.parseFile(filePath).then(function(representation) {
+  console.log('parsed gradle result: ', representation.buildscript.dependencies);
   });
 }
 
@@ -109,6 +118,8 @@ module.exports.findFrameworksFromBuildAndDependencyTools = function (buildAndDep
 
       case 'BUILD.GRADLE':
         console.log('gradle start');
+        var filePath = findFilePathBasedOnFileName('BUILD.GRADLE', listOfFileNamesAndPaths, dirname)
+        output = parseGradleBuild(filePath)
         console.log('gradle end');
         break;
 
@@ -132,7 +143,7 @@ module.exports.findFrameworksFromBuildAndDependencyTools = function (buildAndDep
         console.log('package.json start');
         var fPath = findFilePathBasedOnFileName('PACKAGE.JSON', listOfFileNamesAndPaths, dirname)
         output = parsePackageJSON(fPath)
-        console.log('package.json end ', result);
+        console.log('package.json end ', output);
         break;
 
       case 'COMPOSER.JSON':

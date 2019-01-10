@@ -10,7 +10,9 @@ var utils = require('./utils')
  * subfolders along with their size.
  */
 
-let dirname = '../../../../GNSTemple/code/gns-temp/java'
+let dirname1 = '../../../../GNSTemple/code/gns-temp'
+const dirname2 = '../TestProjects/javatest-maven'
+const dirname = '../TestProjects/javatest-gradle'
 
 var extensions = []
 var runTimes = []
