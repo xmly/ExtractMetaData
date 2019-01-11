@@ -6,12 +6,17 @@ var utils = require('./utils')
 const dirname = '../../../../GNSTemple/code/gns-temp'
 const dirname2 = '../TestProjects/javatest-maven'
 const dirname3 = '../TestProjects/javatest-gradle'
+const dirname4 = '../TestProjects/example-php'
+const dirname5 = '../TestProjects/example-ruby-app'
+const dirname6 = '../TestProjects/grafeas-tutorial'
+const dirname7 = '../TestProjects/deep_qa'
+
 
 function readFiles() {
   return new Promise((resolve,reject) => {
     readdirp({
       root: path.join(dirname),
-      fileFilter: '*.*',
+      fileFilter: '*',
       directoryFilter: [ '!.git', '!*modules' ],
     }, function(fileInfo) {
      // do something with file entry here
@@ -62,11 +67,13 @@ function main() {
         }
       })
 
+      var buildAndDependencyActualTools = requiredFunctions.findBuildAndDependencyToolsFromFiles(buildAndDependencyTools)
+
       var output = {
         // listOfFileNamesAndPaths,
         // extensions,
         technology,
-        buildAndDependencyTools,
+        buildAndDependencyTools: buildAndDependencyActualTools,
         frameworksAndDependencies,
         scripts
       }
