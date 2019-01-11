@@ -13,7 +13,9 @@
     "gradle-to-js": "^1.2.0",
     "lodash": "^4.17.11",
     "pom-parser": "^1.1.1",
+    "prompt": "^1.0.0",
     "read-package-json": "^2.0.13",
-    "readdirp": "^2.2.1"
+    "readdirp": "^2.2.1",
+    "simple-git": "^1.107.0"
   }
 }

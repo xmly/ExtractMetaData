@@ -332,7 +332,7 @@ module.exports.findFrameworksAndScriptsFromBuildAndDependencyTools = function (b
           break;
 
         default:
-          console.log('default case. Missed for: ', tool);
+          // console.log('default case. Missed for: ', tool);
           break;
       }
       // console.log('switch output: ', output);
