@@ -12,9 +12,21 @@ To run the app:
   - `npm run start`
 
 * User is supposed to provide one of the following inputs:
-  1. Github URL - public
-  2. Directory path - absolute
+  - Github URL - public
+  - Directory path - absolute
 
+
+## Supported Technologies
+
+  - The following technologies are parsed using this tool:
+    - Java : Maven, Gradle
+    - Node : Package.json
+    - Yarn : yarn.lock
+    - Go : Gopkg.toml
+    - Ruby : Gemfile
+    - Python : Requirements.txt
+
+  - I am parsing the meta data using this [list](https://github.com/PhaniKumarAdiraju/ExtractMetaData/blob/master/utils.js), so you will see unknownRunTimes in the output. You can add more extensions to parse more technologies
 
 ## Example
  - Input given by user: `https://github.com/PhaniKumarAdiraju/Readable-react-nanodegree`
@@ -32,6 +44,12 @@ To run the app:
        'SVG',
        'HTML'
      ],
+      unknownRunTimes: [
+        '.JSON',
+        '.LOCK',
+        '.ICO',
+        '.PNG'
+      ]
     },
     buildAndDependencyTools: [
       'NODE',
