@@ -4,6 +4,8 @@ var Promise = require("bluebird")
 var readJson = require('read-package-json')
 var pomParser = require("pom-parser")
 var g2js = require('gradle-to-js/lib/parser')
+var fs = require('fs')
+var path = require('path')
 
 module.exports.findExtensions = function (listOfFileNamesAndPaths) {
   var extensions = []
@@ -44,10 +46,11 @@ module.exports.findBuildAndDependencyManagementTools = function (listOfFileNames
     'POM.XML', 'BUILD.GRADLE', // java
     'GRUNT.JS', 'WEBPACK.CONFIG.JS', 'WEBPACK.CONFIG.DEV.JS', 'WEBPACK.CONFIG.PROD.JS', 'WEBPACKDEVSERVER.CONFIG.JS', // javascript
     'PACKAGE.JSON', // node
+    'YARN.LOCK', // yarn
     'COMPOSER.JSON', //php
-    'GOPKG.TOML', 'GOPKG.LOCK' // Go
-    // Ruby - interpreted language so no build tools
-    // Python - pip : scan all files for imports
+    'GOPKG.TOML', // Go
+    'GEMFILE', // Ruby
+    'REQUIREMENTS.TXT', // Python - looking for django and flask
   ]
   // console.log('exp findB&D list of Files: ', listOfFileNamesAndPaths);
 
@@ -56,6 +59,69 @@ module.exports.findBuildAndDependencyManagementTools = function (listOfFileNames
     fileNamesList.push(file.fileName) // since every object has just one key
   })
   return _.intersection(buildAndDependencyCheckList, fileNamesList)
+}
+
+module.exports.findBuildAndDependencyToolsFromFiles = function (buildAndDependencyTools) {
+  let actualTools = [
+    {
+      toolCurrent: 'POM.XML',
+      toolShouldBe: 'MAVEN'
+    },
+    {
+      toolCurrent: 'BUILD.GRADLE',
+      toolShouldBe: 'GRADLE'
+    },
+    {
+      toolCurrent: 'PACKAGE.JSON',
+      toolShouldBe: 'NODE'
+    },
+    {
+      toolCurrent: 'YARN.LOCK',
+      toolShouldBe: 'YARN'
+    },
+    {
+      toolCurrent: 'COMPOSER.JSON',
+      toolShouldBe: 'PHP - COMPOSER.JSON'
+    },
+    {
+      toolCurrent: 'GOPKG.TOML',
+      toolShouldBe: 'GO'
+    },
+    {
+      toolCurrent: 'GEMFILE',
+      toolShouldBe: 'RUBY'
+    },
+    {
+      toolCurrent: 'REQUIREMENTS.TXT',
+      toolShouldBe: 'PYTHON - REQUIREMENTS.TXT'
+    },
+    {
+      toolCurrent: 'WEBPACK.CONFIG.JS',
+      toolShouldBe: 'WEBPACK'
+    },
+    {
+      toolCurrent: 'WEBPACK.CONFIG.DEV.JS',
+      toolShouldBe: 'WEBPACK'
+    },
+    {
+      toolCurrent: 'WEBPACK.CONFIG.PROD.JS',
+      toolShouldBe: 'WEBPACK'
+    },
+    {
+      toolCurrent: 'WEBPACKDEVSERVER.CONFIG.JS',
+      toolShouldBe: 'WEBPACK'
+    }
+
+  ]
+
+  actualTools.forEach((aTool) => {
+    let index = buildAndDependencyTools.indexOf(aTool.toolCurrent)
+    if(index !== -1) {
+      buildAndDependencyTools[index] = aTool.toolShouldBe
+    }
+  })
+
+  return _.uniq(buildAndDependencyTools)
 }
 
 function findFilePathBasedOnFileName (fileName, listOfFileNamesAndPaths, dirname) {
@@ -133,6 +199,93 @@ function parseGradleBuild (filePath) {
 
 }
 
+function parseGem(fPath) {
+  // console.log('parse gem');
+  var lineReader = require('readline').createInterface({
+    input: require('fs').createReadStream(fPath)
+  });
+  var prom = new Promise((resolve,reject) => {
+    var requiredLines = []
+    if(false) reject('error')
+    lineReader.on('line', function (line) {
+      if(line.includes('gem ') && !line.includes('#')){
+        requiredLines.push(line)
+      }resolve(requiredLines)
+    })
+  })
+
+  return prom.then((data) => {
+    var frameworks = []
+    data.forEach((item) => {
+      frameworks.push(item.trim().split(' ')[1].replace(/['"]+/g,'').replace(/'/g,'').replace(',','').trim())
+    })
+    var gemParsed = {
+      // name: '',
+      frameworks,
+      scripts: ''
+    }
+    return gemParsed
+  })
+}
+
+function parseGopkg(fPath) {
+  // console.log('parse gopkg');
+  var lineReader = require('readline').createInterface({
+    input: require('fs').createReadStream(fPath)
+  });
+  var prom = new Promise((resolve,reject) => {
+    var requiredLines = []
+    if(false) reject('error')
+    lineReader.on('line', function (line) {
+      if(line.includes('name = "') && !line.includes('#')){
+        requiredLines.push(line)
+      }resolve(requiredLines)
+    })
+  })
+
+  return prom.then((data) => {
+    var frameworks = []
+    data.forEach((item) => {
+      frameworks.push(item.trim().split('=')[1].replace(/['"]+/g,'').replace(/'/g,'').replace(',','').trim())
+    })
+    var gopkgParsed = {
+      // name: '',
+      frameworks,
+      scripts: ''
+    }
+    return gopkgParsed
+  })
+}
+
+function parsePythonRequirementsTxt(fPath) {
+  // console.log('parse python Requirementstxt');
+  var lineReader = require('readline').createInterface({
+    input: require('fs').createReadStream(fPath)
+  });
+  var prom = new Promise((resolve,reject) => {
+    var requiredLines = []
+    if(false) reject('error')
+    lineReader.on('line', function (line) {
+      if(!line.includes('#') && line.trim().length>1){
+        requiredLines.push(line)
+      }resolve(requiredLines)
+    })
+  })
+
+  return prom.then((data) => {
+    var frameworks = []
+    data.forEach((item) => {
+      frameworks.push(item.trim())
+    })
+    var parsePythonRequirementsTxtParsed = {
+      // name: '',
+      frameworks,
+      scripts: ''
+    }
+    return parsePythonRequirementsTxtParsed
+  })
+}
+
 module.exports.findFrameworksAndScriptsFromBuildAndDependencyTools = function (buildAndDependencyTools, listOfFileNamesAndPaths, dirname) {
   return Promise.all(
     buildAndDependencyTools.map((tool) => {
@@ -156,21 +309,26 @@ module.exports.findFrameworksAndScriptsFromBuildAndDependencyTools = function (b
           // console.log('package.json start');
           var fPath = findFilePathBasedOnFileName('PACKAGE.JSON', listOfFileNamesAndPaths, dirname)
           output = parsePackageJSON(fPath)
-          return output
+          break;
 
         case 'COMPOSER.JSON':
-          console.log('composer start');
+          console.log('composer start - yet to do');
           console.log('composer end');
           break;
 
         case 'GOPKG.TOML':
-          console.log('gopkg.toml start');
-          console.log('gopkg.toml end');
+          var fPath = findFilePathBasedOnFileName('GOPKG.TOML', listOfFileNamesAndPaths, dirname)
+          output = parseGopkg(fPath)
           break;
 
-        case 'GOPKG.LOCK':
-          console.log('gopkg.lock start');
-          console.log('gopkg.lock end');
+        case 'GEMFILE':
+          var fPath = findFilePathBasedOnFileName('GEMFILE', listOfFileNamesAndPaths, dirname)
+          output = parseGem(fPath)
+          break;
+
+        case 'REQUIREMENTS.TXT':
+          var fPath = findFilePathBasedOnFileName('REQUIREMENTS.TXT', listOfFileNamesAndPaths, dirname)
+          output = parsePythonRequirementsTxt(fPath)
           break;
 
         default:
