@@ -19,6 +19,7 @@ To run the app:
 ## Example
  - Input given by user: `https://github.com/PhaniKumarAdiraju/Readable-react-nanodegree`
  - Expected output is as follows:
+  ```
    { name: 'Readable-react-nanodegree',
     technology:
      { runTimes:
@@ -47,3 +48,4 @@ To run the app:
          build: 'react-scripts build',
          test: 'react-scripts test --env=jsdom',
          eject: 'react-scripts eject' } ] }
+  ```
