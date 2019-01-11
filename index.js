@@ -5,15 +5,6 @@ var utils = require('./utils')
 const simpleGit = require('simple-git')
 var prompt = require('prompt')
 
-const dirname = '../../../../GNSTemple/code/gns-temp'
-const dirname2 = '../TestProjects/javatest-maven'
-const dirname3 = '../TestProjects/javatest-gradle'
-const dirname4 = '../TestProjects/example-php'
-const dirname5 = '../TestProjects/example-ruby-app'
-const dirname6 = '../TestProjects/grafeas-tutorial'
-const dirname7 = '../TestProjects/deep_qa'
-
-
 function readFiles(dirname) {
   return new Promise((resolve,reject) => {
     readdirp({
@@ -44,7 +35,7 @@ function readFiles(dirname) {
 }
 
 function startParsing(dirname) {
-  console.log('started startParsing');
+  // console.log('started startParsing');
   readFiles(dirname)
   .then((listOfFileNamesAndPaths) => {
     var extensions = requiredFunctions.findExtensions(listOfFileNamesAndPaths)
@@ -81,7 +72,7 @@ function startParsing(dirname) {
       return output
     }) // end of step 3
     .then((output) => {
-      console.log('final output: ', output);
+      console.log('output: ', output);
     })
 
   })
