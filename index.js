@@ -35,7 +35,7 @@ function readFiles(dirname) {
 }
 
 function startParsing(dirname) {
-  console.log('started startParsing');
+  // console.log('started startParsing');
   readFiles(dirname)
   .then((listOfFileNamesAndPaths) => {
     var extensions = requiredFunctions.findExtensions(listOfFileNamesAndPaths)
@@ -72,7 +72,7 @@ function startParsing(dirname) {
       return output
     }) // end of step 3
     .then((output) => {
-      console.log('final output: ', output);
+      console.log('output: ', output);
     })
 
   })
