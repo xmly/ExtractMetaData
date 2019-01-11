@@ -2,6 +2,8 @@ const path = require('path');
 const readdirp = require('readdirp');
 var requiredFunctions = require('./requiredFunctions')
 var utils = require('./utils')
+const simpleGit = require('simple-git')
+var prompt = require('prompt')
 
 const dirname = '../../../../GNSTemple/code/gns-temp'
 const dirname2 = '../TestProjects/javatest-maven'
@@ -12,7 +14,7 @@ const dirname6 = '../TestProjects/grafeas-tutorial'
 const dirname7 = '../TestProjects/deep_qa'
 
 
-function readFiles() {
+function readFiles(dirname) {
   return new Promise((resolve,reject) => {
     readdirp({
       root: path.join(dirname),
@@ -41,9 +43,9 @@ function readFiles() {
   })
 }
 
-function main() {
-  console.log('started main');
-  readFiles()
+function startParsing(dirname) {
+  console.log('started startParsing');
+  readFiles(dirname)
   .then((listOfFileNamesAndPaths) => {
     var extensions = requiredFunctions.findExtensions(listOfFileNamesAndPaths)
     var technology = requiredFunctions.findTechnology(extensions)
@@ -70,8 +72,7 @@ function main() {
       var buildAndDependencyActualTools = requiredFunctions.findBuildAndDependencyToolsFromFiles(buildAndDependencyTools)
 
       var output = {
-        // listOfFileNamesAndPaths,
-        // extensions,
+        name: dirname.substring(dirname.lastIndexOf('/')+1),
         technology,
         buildAndDependencyTools: buildAndDependencyActualTools,
         frameworksAndDependencies,
@@ -86,4 +87,19 @@ function main() {
   })
 }
 
+function main() {
+  console.log('Welcome! Provide either directory path or github url: ');
+  prompt.start()
+  prompt.get(['input',], function (err, result) {
+    if(result.input.includes('https://github.com')){
+      simpleGit()
+      .clone(result.input)
+      .exec(() => {
+        startParsing(result.input.substring(result.input.lastIndexOf('/')+1))
+      })
+    } else {
+      startParsing(result.input)
+    }
+  });
+}
 main()
